@@ -3,7 +3,7 @@
 /*----------------------------------------------------------------------------*/
 /* Autor: Bogdan T. Nassu                                                     */
 /*============================================================================*/
-/** Um robô muito ruim - ele decide seus movimentos aleatoriamente! */
+/** Um robï¿½ muito ruim - ele decide seus movimentos aleatoriamente! */
 /*============================================================================*/
 
 #ifndef __DECISOR_ALEATORIO_H
@@ -14,10 +14,14 @@
 #include "game_state.h"
 
 /*============================================================================*/
-/** Estrutura do decisor. Este é um decisor muito burro, não tem nada... */
+/** Estrutura do decisor. Este ï¿½ um decisor muito burro, nï¿½o tem nada... */
 
 typedef struct
-{} Decisor;
+{
+    int reconhecer_spawn;
+
+    
+} Decisor;
 
 /*============================================================================*/
 

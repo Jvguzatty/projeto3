@@ -3,7 +3,7 @@
 /*----------------------------------------------------------------------------*/
 /* Autor: Bogdan T. Nassu                                                     */
 /*============================================================================*/
-/** Exploração da caverna marciana - versão interativa.  */
+/** Exploraï¿½ï¿½o da caverna marciana - versï¿½o interativa.  */
 /*============================================================================*/
 
 #include <stdio.h>
@@ -27,7 +27,7 @@ int main()
     int ultimo_conteudo = POSICAO_INVALIDA; /* Comeca com uma posicao invalida. */
     GameState* game_state;
 
-    /* Gera o jogo. A semente para os números aleatórios é desconhecida. */
+    /* Gera o jogo. A semente para os nï¿½meros aleatï¿½rios ï¿½ desconhecida. */
     game_state = criaGameState (ALTURA_CAVERNA, LARGURA_CAVERNA, N_POCOS_LAVA, time (NULL));
 
     /* Loop principal do jogo. */
@@ -54,7 +54,7 @@ int main()
         printf ("\nRodadas: %d\n", game_state->n_rodadas);
         printf ("Proximo movimento (w: acima, a: esquerda, s: abaixo, d: direita): ");
 
-		// Lê e interpreta o comando.
+		// Lï¿½ e interpreta o comando.
 		scanf ("%c", &comando);
 
         if (comando == 'w')
