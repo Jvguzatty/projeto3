@@ -1,0 +1,31 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build Caverna",
+            "type": "shell",
+            "command": "D:/mingw/bin/gcc.exe",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-g",
+                "main-interativa.c",
+                "game_state.c",
+                "caverna.c",
+                "decisor_aleatorio.c",
+                "-o",
+                "caverna.exe"
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Compila explicitamente os arquivos do projeto da caverna marciana."
+        }
+    ]
+}

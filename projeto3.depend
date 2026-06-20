@@ -1,0 +1,36 @@
+# depslib dependency file v1.0
+1780487260 source:d:\downloads\projeto3\caverna.c
+	<stdio.h>
+	<stdlib.h>
+	"caverna.h"
+
+1780487354 d:\downloads\projeto3\caverna.h
+
+1781830021 source:d:\downloads\projeto3\decisor_aleatorio.c
+	<stdlib.h>
+	<stdio.h>
+	"decisor_aleatorio.h"
+
+1780487358 d:\downloads\projeto3\decisor_aleatorio.h
+	"game_state.h"
+
+1780487364 d:\downloads\projeto3\game_state.h
+	"caverna.h"
+
+1781830025 source:d:\downloads\projeto3\game_state.c
+	<stdio.h>
+	<stdlib.h>
+	"game_state.h"
+
+1780487350 source:d:\downloads\projeto3\main-interativa.c
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+	"game_state.h"
+
+1780487840 source:d:\downloads\projeto3\main-automatica.c
+	<stdio.h>
+	<stdlib.h>
+	"game_state.h"
+	"decisor_aleatorio.h"
+
