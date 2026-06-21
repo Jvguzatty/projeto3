@@ -66,7 +66,7 @@ int main()
         else if (comando == 'd')
             ultimo_conteudo = moveDireita (game_state);
     }
-
+    
     if (game_state->morreu)
         printf ("GAME OVER: O robo caiu na lava!\n");
     else
