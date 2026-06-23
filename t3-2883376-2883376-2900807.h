@@ -1,10 +1,7 @@
-
-/*============================================================================*/
-/* UM DECISOR MUITO, MUITO SIMPLES PARA O PROBLEMA DA CAVERNA MARCIANA        */
 /*----------------------------------------------------------------------------*/
-/* Autor: Bogdan T. Nassu                                                     */
+/* Autores: Rafael Okuma, João Victor Dos Santos, Thiago Macedo               */
 /*============================================================================*/
-/** Um robô muito ruim - ele decide seus movimentos aleatoriamente! */
+/*  Ra:     2883376,        2883376,            2900807                       */
 /*============================================================================*/
 
 #ifndef __DECISOR_ALEATORIO_H
@@ -20,6 +17,7 @@
 typedef struct{
     int** m;
     int reconhecer_spawn;
+    int TEM_AGUAA;
 
 } Decisor;
 

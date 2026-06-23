@@ -1,12 +1,12 @@
 /*----------------------------------------------------------------------------*/
-/* Autores: Rafael Okuma, João Victor Dos Santos, Thiago Macedo,              */
+/* Autores: Rafael Okuma, João Victor Dos Santos, Thiago Macedo               */
 /*============================================================================*/
 /*  Ra:     2883376,        2883376,            2900807                       */
 /*============================================================================*/
 
 #include <stdlib.h>
 
-#include "t3-2883376-2883376-2900807.h"
+#include "t3-2883376-2883376-2900807.h" 
 
 
 
@@ -21,7 +21,10 @@
 Decisor* criaDecisor(int altura, int largura) 
 {
     Decisor* d = (Decisor*) malloc(sizeof(Decisor));
+
     d->reconhecer_spawn = 0;
+    d->TEM_AGUAA = 0;
+
     d->m = (int**) malloc(altura * sizeof(int*));
     for (int i = 0; i < altura; i++) 
     {
@@ -55,6 +58,16 @@ void destroiDecisor (Decisor* d)
 
 int proximoMovimento (Decisor* d, Coordenada pos, int agua, int n_lava)
 {
+    if (agua == 1)
+    {
+        d->TEM_AGUAA = 1; //pq eu fiz uma flag? resposta: a variavel "agua" so diz se APENAS aquela posicao tem agua.
+    }
+    if (d->TEM_AGUAA == 1)
+    {
+        return(3);
+    }
+
+
 
 //////////////////////////////////////////////////////////
     //reconhecer spawn, pq nao pode ter lava aos redos dele
@@ -71,14 +84,10 @@ int proximoMovimento (Decisor* d, Coordenada pos, int agua, int n_lava)
         }
     }
 
-    if(agua == 1)
-    {
-
-    }
 ////////////////////////////////////////////////////////////
+
+
     return (4);
-
-
 }
 
 /*============================================================================*/
