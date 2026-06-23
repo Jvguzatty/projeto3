@@ -10,7 +10,7 @@
 #include <stdlib.h>
 
 #include "game_state.h"
-#include "decisor_aleatorio.h" // TODO: substitua este arquivo pelo seu .h.
+#include "t3-x-y-z.h" // Usando o cabeçalho com os RAs do trabalho.
 
 /*============================================================================*/
 

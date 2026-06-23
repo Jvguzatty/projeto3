@@ -1,14 +1,14 @@
-/*============================================================================*/
-/* UM DECISOR MUITO, MUITO SIMPLES PARA O PROBLEMA DA CAVERNA MARCIANA        */
 /*----------------------------------------------------------------------------*/
-/* Autor: Bogdan T. Nassu                                                     */
+/* Autores: Rafael Okuma, João Victor Dos Santos, Thiago Macedo,              */
 /*============================================================================*/
-/** Um robô muito ruim - ele decide seus movimentos aleatoriamente! */
+/*  Ra:     2883376,        2883376,            2900807                       */
 /*============================================================================*/
 
 #include <stdlib.h>
 
-#include "t3-x-y-z.h"
+#include "t3-2883376-2883376-2900807.h"
+
+
 
 /*============================================================================*/
 /** Simplesmente aloca um Decisor.
@@ -18,12 +18,14 @@
  *
  * Valor de Retorno: um Decisor alocado. */
 
-Decisor* criaDecisor (int altura, int largura)
+Decisor* criaDecisor(int altura, int largura) 
 {
-    Decisor* d = ((Decisor*) malloc ((altura*largura)*sizeof (Decisor)));
-    d->m = (int**)malloc(altura*sizeof(int*));
-    for(int i = 0;i<largura;i++){
-        d->m[i] = (int*)malloc(largura*sizeof(int));
+    Decisor* d = (Decisor*) malloc(sizeof(Decisor));
+    d->reconhecer_spawn = 0;
+    d->m = (int**) malloc(altura * sizeof(int*));
+    for (int i = 0; i < altura; i++) 
+    {
+        d->m[i] = (int*) malloc(largura * sizeof(int));
     }
     return d;
 }
@@ -54,7 +56,6 @@ void destroiDecisor (Decisor* d)
 int proximoMovimento (Decisor* d, Coordenada pos, int agua, int n_lava)
 {
 
-
 //////////////////////////////////////////////////////////
     //reconhecer spawn, pq nao pode ter lava aos redos dele
     if (d->reconhecer_spawn == 0)
@@ -70,11 +71,12 @@ int proximoMovimento (Decisor* d, Coordenada pos, int agua, int n_lava)
         }
     }
 
-    if(agua == 1){
+    if(agua == 1)
+    {
 
     }
 ////////////////////////////////////////////////////////////
-    return (2);
+    return (4);
 
 
 }
