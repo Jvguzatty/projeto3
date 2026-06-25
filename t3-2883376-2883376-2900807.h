@@ -15,7 +15,7 @@
 /** Estrutura do decisor. Este é um decisor muito burro, não tem nada... */
 
 typedef struct{
-    int** m;
+    int** mapa;
     int reconhecer_spawn;
     int TEM_AGUAA;
 
