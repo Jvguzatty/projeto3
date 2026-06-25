@@ -6,7 +6,7 @@
 
 #include <stdlib.h>
 
-#include "t3-2883376-2883376-2900807.h" 
+#include "decisor_aleatorio.h"
 
 
 
@@ -18,18 +18,27 @@
  *
  * Valor de Retorno: um Decisor alocado. */
 
-Decisor* criaDecisor(int altura, int largura) 
+Decisor* criaDecisor(int altura, int largura)
 {
+    int i,j;
     Decisor* d = (Decisor*) malloc(sizeof(Decisor));
 
     d->reconhecer_spawn = 0;
     d->TEM_AGUAA = 0;
 
-    d->m = (int**) malloc(altura * sizeof(int*));
-    for (int i = 0; i < altura; i++) 
+    d->mapa = (int**) malloc(altura * sizeof(int*));
+    for (i = 0; i < altura; i++)
     {
-        d->m[i] = (int*) malloc(largura * sizeof(int));
+        d->mapa[i] = (int*) malloc(largura * sizeof(int));
     }
+
+    for(i=0;i<altura;i++){
+        for(j=0;j<largura;j++){
+            d->mapa[i][j] = 0;
+        }
+    }
+
+
     return d;
 }
 
@@ -58,21 +67,20 @@ void destroiDecisor (Decisor* d)
 
 int proximoMovimento (Decisor* d, Coordenada pos, int agua, int n_lava)
 {
+
+
+
     if (agua == 1)
     {
         d->TEM_AGUAA = 1; //pq eu fiz uma flag? resposta: a variavel "agua" so diz se APENAS aquela posicao tem agua.
     }
     if (d->TEM_AGUAA == 1)
     {
-        return(3);
-    }
-
-
-
-//////////////////////////////////////////////////////////
-    //reconhecer spawn, pq nao pode ter lava aos redos dele
-    if (d->reconhecer_spawn == 0)
-    {
+        return (rand() % 2) ? 3 : 1;
+    }else{
+        d->mapa[pos.y][pos.x] = 1;
+        if (d->reconhecer_spawn == 0)
+        {
         if (pos.x == 0 && pos.y == 0) return (4);
         if (pos.x == 1 && pos.y == 0) return (2);
         if (pos.x == 1 && pos.y == 1) return (3);
@@ -83,11 +91,19 @@ int proximoMovimento (Decisor* d, Coordenada pos, int agua, int n_lava)
             return (1);
         }
     }
+      return (1+(rand ()%4));
+    }
+
+
+
+//////////////////////////////////////////////////////////
+    //reconhecer spawn, pq nao pode ter lava aos redos dele
+
 
 ////////////////////////////////////////////////////////////
 
 
-    return (4);
+
 }
 
 /*============================================================================*/
