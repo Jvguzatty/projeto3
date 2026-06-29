@@ -37,7 +37,7 @@ Decisor* criaDecisor(int altura, int largura)
             d->mapa[i][j] = 0;
         }
     }
-
+    
 
     return d;
 }
@@ -53,7 +53,7 @@ void destroiDecisor (Decisor* d)
 {
     free (d);
 }
-
+    // teste
 /*----------------------------------------------------------------------------*/
 /** Este decisor não faz absolutamente nada quando é informado sobre o conteúdo
  * da posição atual! Ele simplesmente retorna um movimento aleatório.
