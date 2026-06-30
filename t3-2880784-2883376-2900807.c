@@ -6,7 +6,7 @@
 
 #include <stdlib.h>
 
-#include "decisor_aleatorio.h"
+#include "t3-2883376-2883376-2900807.h"
 
 
 
@@ -23,8 +23,13 @@ Decisor* criaDecisor(int altura, int largura)
     int i,j;
     Decisor* d = (Decisor*) malloc(sizeof(Decisor));
 
+    d->inverte = 0;
+    d->i = 0;
     d->reconhecer_spawn = 0;
-    d->TEM_AGUAA = 0;
+    d->TEM_AGUA = 0;
+    d->path[100];
+    d->random = 0;
+    d->passo= -1;
 
     d->mapa = (int**) malloc(altura * sizeof(int*));
     for (i = 0; i < altura; i++)
@@ -32,8 +37,10 @@ Decisor* criaDecisor(int altura, int largura)
         d->mapa[i] = (int*) malloc(largura * sizeof(int));
     }
 
-    for(i=0;i<altura;i++){
-        for(j=0;j<largura;j++){
+    for(i=0;i<altura;i++)
+    {
+        for(j=0;j<largura;j++)
+        {
             d->mapa[i][j] = 0;
         }
     }
@@ -67,31 +74,56 @@ void destroiDecisor (Decisor* d)
 
 int proximoMovimento (Decisor* d, Coordenada pos, int agua, int n_lava)
 {
+    d->random = 0;
+    d->i;
+    d->random = 1+(rand()%4);//(rand() % 2) ? 3 : 1;
+    d->path[d->random];
+    d->i++;
 
+    if (d->inverte == 1)
+    {
+        for (int j=d->i;j>0;j++)
+        {
+            d->path[j];
+        }
+        d->TEM_AGUA = 1;
+    }
+    if (d->TEM_AGUA == 1)
+    {
+        d->passo++;
+        return d->path[d->passo];
+    }
 
+    if (n_lava == 0)
+    {
+        d->mapa[pos.x][pos.y] = 1;
+    }
+    else
+    {
+        d->mapa[pos.x][pos.y] = 2;
+    }
 
     if (agua == 1)
     {
-        d->TEM_AGUAA = 1; //pq eu fiz uma flag? resposta: a variavel "agua" so diz se APENAS aquela posicao tem agua.
+        d->inverte = 1;
     }
-    if (d->TEM_AGUAA == 1)
+    
+    else
     {
-        return (rand() % 2) ? 3 : 1;
-    }else{
         d->mapa[pos.y][pos.x] = 1;
         if (d->reconhecer_spawn == 0)
         {
-        if (pos.x == 0 && pos.y == 0) return (4);
-        if (pos.x == 1 && pos.y == 0) return (2);
-        if (pos.x == 1 && pos.y == 1) return (3);
+            if (pos.x == 0 && pos.y == 0) return (4);
+            if (pos.x == 1 && pos.y == 0) return (2);
+            if (pos.x == 1 && pos.y == 1) return (3);
 //              Se a memoria diz que ele AINDA NN terminou o spawn (vale 0)
-        if (pos.x == 0 && pos.y == 1)
-        {
-            d->reconhecer_spawn = 1;
-            return (1);
+            if (pos.x == 0 && pos.y == 1)
+            {
+                d->reconhecer_spawn = 1;
+                return (1);
+            }
         }
-    }
-      return (1+(rand ()%4));
+      return d->random;
     }
 
 

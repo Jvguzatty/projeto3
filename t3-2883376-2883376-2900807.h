@@ -17,7 +17,12 @@
 typedef struct{
     int** mapa;
     int reconhecer_spawn;
-    int TEM_AGUAA;
+    int TEM_AGUA;
+    int* path;
+    int random;
+    int i;
+    int inverte; 
+    int passo;
 
 } Decisor;
 
