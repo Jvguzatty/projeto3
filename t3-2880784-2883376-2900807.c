@@ -8,8 +8,6 @@
 
 #include "t3-2883376-2883376-2900807.h"
 
-
-
 /*============================================================================*/
 /** Simplesmente aloca um Decisor.
  *
@@ -21,30 +19,41 @@
 Decisor* criaDecisor(int altura, int largura)
 {
     int i,j;
+
     Decisor* d = (Decisor*) malloc(sizeof(Decisor));
+
+    d->altura = altura;
+    d->largura = largura;
 
     d->inverte = 0;
     d->i = 0;
     d->reconhecer_spawn = 0;
     d->TEM_AGUA = 0;
-    d->path[100];
     d->random = 0;
-    d->passo= -1;
+    d->passo = -1;
 
-    d->mapa = (int**) malloc(altura * sizeof(int*));
-    for (i = 0; i < altura; i++)
+    d->ultimo_x = 0;
+    d->ultimo_y = 0;
+
+    d->path = (int*) malloc(sizeof(int)*1000);
+
+    d->mapa = (int**) malloc(sizeof(int*)*altura);
+    d->peso = (int**) malloc(sizeof(int*)*altura);
+
+    for(i=0;i<altura;i++)
     {
-        d->mapa[i] = (int*) malloc(largura * sizeof(int));
+        d->mapa[i]=(int*) malloc(sizeof(int)*largura);
+        d->peso[i]=(int*) malloc(sizeof(int)*largura);
     }
 
     for(i=0;i<altura;i++)
     {
         for(j=0;j<largura;j++)
         {
-            d->mapa[i][j] = 0;
+            d->mapa[i][j]=0;
+            d->peso[i][j]=50; // tudo comeca desconhecido
         }
     }
-    
 
     return d;
 }
@@ -58,9 +67,21 @@ Decisor* criaDecisor(int altura, int largura)
 
 void destroiDecisor (Decisor* d)
 {
-    free (d);
+    int i;
+    
+    for(i=0;i<d->altura;i++)
+    {
+        free(d->mapa[i]);
+        free(d->peso[i]);
+    }
+
+    free(d->mapa);
+    free(d->peso);
+    free(d->path);
+
+    free(d);
 }
-    // teste
+
 /*----------------------------------------------------------------------------*/
 /** Este decisor não faz absolutamente nada quando é informado sobre o conteúdo
  * da posição atual! Ele simplesmente retorna um movimento aleatório.
@@ -70,72 +91,81 @@ void destroiDecisor (Decisor* d)
  *             int agua: 1 se a posição atual tiver água, 0 do contrário.
  *             int n_lava: número de poços de lava em casas vizinhas à atual.
  *
- * Valor de Retorno: a direção do próximo movimento: 1 – para cima, 2 – para baixo, 3 – para a esquerda, 4 – para a direita. */
+ * Valor de Retorno: a direção do próximo movimento.
+ */
 
 int proximoMovimento (Decisor* d, Coordenada pos, int agua, int n_lava)
 {
-    d->random = 0;
-    d->i;
-    d->random = 1+(rand()%4);//(rand() % 2) ? 3 : 1;
-    d->path[d->random];
-    d->i++;
+    if(pos.x != d->ultimo_x || pos.y != d->ultimo_y)
+    {
+        d->path[d->i] = d->random;
+        d->i++;
 
-    if (d->inverte == 1)
-    {
-        for (int j=d->i;j>0;j++)
-        {
-            d->path[j];
-        }
-        d->TEM_AGUA = 1;
-    }
-    if (d->TEM_AGUA == 1)
-    {
-        d->passo++;
-        return d->path[d->passo];
+        d->ultimo_x = pos.x;
+        d->ultimo_y = pos.y;
     }
 
-    if (n_lava == 0)
-    {
-        d->mapa[pos.x][pos.y] = 1;
-    }
-    else
-    {
-        d->mapa[pos.x][pos.y] = 2;
-    }
-
-    if (agua == 1)
-    {
-        d->inverte = 1;
-    }
-    
-    else
-    {
+    if(n_lava==0)
         d->mapa[pos.y][pos.x] = 1;
-        if (d->reconhecer_spawn == 0)
-        {
-            if (pos.x == 0 && pos.y == 0) return (4);
-            if (pos.x == 1 && pos.y == 0) return (2);
-            if (pos.x == 1 && pos.y == 1) return (3);
-//              Se a memoria diz que ele AINDA NN terminou o spawn (vale 0)
-            if (pos.x == 0 && pos.y == 1)
-            {
-                d->reconhecer_spawn = 1;
-                return (1);
-            }
-        }
-      return d->random;
+    else
+        d->mapa[pos.y][pos.x] = 2;
+
+    if(agua==1)
+    {
+        d->TEM_AGUA=1;
+        d->passo=d->i-1;
     }
 
+    if(d->TEM_AGUA==1)
+    {
+        if(d->passo<0)
+            return 1;
 
+        if(d->path[d->passo]==1)
+        {
+            d->passo--;
+            return 2;
+        }
 
-//////////////////////////////////////////////////////////
-    //reconhecer spawn, pq nao pode ter lava aos redos dele
+        if(d->path[d->passo]==2)
+        {
+            d->passo--;
+            return 1;
+        }
 
+        if(d->path[d->passo]==3)
+        {
+            d->passo--;
+            return 4;
+        }
 
-////////////////////////////////////////////////////////////
+        if(d->path[d->passo]==4)
+        {
+            d->passo--;
+            return 3;
+        }
+    }
 
+    if(d->reconhecer_spawn==0)
+    {
+        if(pos.x==0 && pos.y==0)
+            return 4;
 
+        if(pos.x==1 && pos.y==0)
+            return 2;
 
+        if(pos.x==1 && pos.y==1)
+            return 3;
+
+        if(pos.x==0 && pos.y==1)
+        {
+            d->reconhecer_spawn=1;
+            return 1;
+        }
+    }
+        d->random = 1 + (rand()%4);
+
+    return d->random;
 }
 
 /*============================================================================*/
