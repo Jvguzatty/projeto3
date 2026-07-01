@@ -14,7 +14,7 @@
 
 /*============================================================================*/
 
-#define PASSO_A_PASSO 1 // Flag que diz se o progresso do rob� ser� mostrado passo-a-passo. Mude para 0 se for rodar muitos testes!
+#define PASSO_A_PASSO 0 // Flag que diz se o progresso do rob� ser� mostrado passo-a-passo. Mude para 0 se for rodar muitos testes!
 #define CLEAR_SCREEN_CMD "cls" // No Linux, mude para "clear".
 
 /* Um modificador para a semente usada pelo gerador de n�meros aleat�rios na

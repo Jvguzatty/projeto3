@@ -7,42 +7,32 @@
 #ifndef __DECISOR_ALEATORIO_H
 #define __DECISOR_ALEATORIO_H
 
-/*============================================================================*/
-
 #include "game_state.h"
 
-/*============================================================================*/
-/** Estrutura do decisor. Este é um decisor muito burro, não tem nada... */
+#define MAX_DIM 20
 
-typedef struct{
+typedef struct
+{
+    int x;
+    int y;
+} Passo;
 
-    int** mapa;
-    int** peso;
-
+typedef struct
+{
     int altura;
     int largura;
 
-    int reconhecer_spawn;
-    int TEM_AGUA;
+    int visitado[MAX_DIM][MAX_DIM];
+    int seguro[MAX_DIM][MAX_DIM];
 
-    int* path;
-
-    int random;
-    int i;
-    int inverte;
-    int passo;
-
-    int ultimo_x;
-    int ultimo_y;
-
+    Passo historico[MAX_DIM * MAX_DIM * 4];
+    int topo_historico;
+    int modo_retorno;
+    int ultima_direcao;
 } Decisor;
-
-/*============================================================================*/
 
 Decisor* criaDecisor (int altura, int largura);
 void destroiDecisor (Decisor* d);
 int proximoMovimento (Decisor* d, Coordenada pos, int agua, int n_lava);
 
-/*============================================================================*/
-
-#endif /* __DECISOR_ALEATORIO_H */
+#endif

@@ -1,171 +1,218 @@
 /*----------------------------------------------------------------------------*/
 /* Autores: Rafael Okuma, João Victor Dos Santos, Thiago Macedo               */
 /*============================================================================*/
-/*  Ra:     2883376,        2883376,            2900807                       */
+/*  Ra:     2880784,        2883376,            2900807                       */
 /*============================================================================*/
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "t3-2883376-2883376-2900807.h"
 
-/*============================================================================*/
-/** Simplesmente aloca um Decisor.
- *
- * Parâmetros: int altura: número de linhas no tabuleiro.
- *             int largura: número de colunas no tabuleiro.
- *
- * Valor de Retorno: um Decisor alocado. */
+int direcaoOposta(int dir)
+{
+    if(dir == DIR_MOVIMENTO_CIMA)
+    {
+        return DIR_MOVIMENTO_BAIXO;
+    }
+    if(dir == DIR_MOVIMENTO_BAIXO)
+    {
+        return DIR_MOVIMENTO_CIMA;
+    }
+    if(dir == DIR_MOVIMENTO_ESQUERDA)
+    {
+        return DIR_MOVIMENTO_DIREITA;
+    }
+    if(dir == DIR_MOVIMENTO_DIREITA)
+    {
+        return DIR_MOVIMENTO_ESQUERDA;
+    }
+
+    return 0;
+}
+
+///////////////////////////////////////////////////////////////////
 
 Decisor* criaDecisor(int altura, int largura)
 {
-    int i,j;
-
     Decisor* d = (Decisor*) malloc(sizeof(Decisor));
 
     d->altura = altura;
     d->largura = largura;
+    d->topo_historico = 0;
+    d->modo_retorno = 0;
+    d->ultima_direcao = 0;
 
-    d->inverte = 0;
-    d->i = 0;
-    d->reconhecer_spawn = 0;
-    d->TEM_AGUA = 0;
-    d->random = 0;
-    d->passo = -1;
+    memset(d->visitado, 0, sizeof(d->visitado));
+    memset(d->seguro, 0, sizeof(d->seguro));
 
-    d->ultimo_x = 0;
-    d->ultimo_y = 0;
-
-    d->path = (int*) malloc(sizeof(int)*1000);
-
-    d->mapa = (int**) malloc(sizeof(int*)*altura);
-    d->peso = (int**) malloc(sizeof(int*)*altura);
-
-    for(i=0;i<altura;i++)
-    {
-        d->mapa[i]=(int*) malloc(sizeof(int)*largura);
-        d->peso[i]=(int*) malloc(sizeof(int)*largura);
-    }
-
-    for(i=0;i<altura;i++)
-    {
-        for(j=0;j<largura;j++)
-        {
-            d->mapa[i][j]=0;
-            d->peso[i][j]=50; // tudo comeca desconhecido
-        }
-    }
+    d->seguro[0][0] = 1;
 
     return d;
 }
 
-/*----------------------------------------------------------------------------*/
-/** Simplesmente desaloca um Decisor.
- *
- * Parâmetros: Decisor* d: Decisor a destruir.
- *
- * Valor de Retorno: NENHUM */
+////////////////////////////////////////////////////////////////////////////////////////////
 
-void destroiDecisor (Decisor* d)
+void destroiDecisor(Decisor* d)
 {
-    int i;
-    
-    for(i=0;i<d->altura;i++)
-    {
-        free(d->mapa[i]);
-        free(d->peso[i]);
-    }
-
-    free(d->mapa);
-    free(d->peso);
-    free(d->path);
-
     free(d);
 }
 
-/*----------------------------------------------------------------------------*/
-/** Este decisor não faz absolutamente nada quando é informado sobre o conteúdo
- * da posição atual! Ele simplesmente retorna um movimento aleatório.
- *
- * Parâmetros: Decisor* d: o Decisor.
- *             Coordenada pos: posição atual.
- *             int agua: 1 se a posição atual tiver água, 0 do contrário.
- *             int n_lava: número de poços de lava em casas vizinhas à atual.
- *
- * Valor de Retorno: a direção do próximo movimento.
- */
-
-int proximoMovimento (Decisor* d, Coordenada pos, int agua, int n_lava)
+////////////////////////////////////////////////////////////////////////////////////////////
+int proximoMovimento(Decisor* d, Coordenada pos, int agua, int n_lava)
 {
-    if(pos.x != d->ultimo_x || pos.y != d->ultimo_y)
-    {
-        d->path[d->i] = d->random;
-        d->i++;
+    int dirs[4] = {DIR_MOVIMENTO_CIMA, DIR_MOVIMENTO_BAIXO, DIR_MOVIMENTO_ESQUERDA, DIR_MOVIMENTO_DIREITA};
+    int dx[4] = {0, 0, -1, 1};
+    int dy[4] = {-1, 1, 0, 0};
+    int i;
 
-        d->ultimo_x = pos.x;
-        d->ultimo_y = pos.y;
+    d->visitado[pos.y][pos.x]++;
+    d->seguro[pos.y][pos.x] = 1;
+
+    if(agua == 1)
+    {
+        d->modo_retorno = 1;
     }
 
-    if(n_lava==0)
-        d->mapa[pos.y][pos.x] = 1;
+    if(n_lava == 0)
+    {
+        if(pos.y - 1 >= 0)
+        {
+            d->seguro[pos.y - 1][pos.x] = 1;
+        }
+        if(pos.y + 1 < d->altura)
+        {
+            d->seguro[pos.y + 1][pos.x] = 1;
+        }
+        if(pos.x - 1 >= 0)
+        {
+            d->seguro[pos.y][pos.x - 1] = 1;
+        }
+        if(pos.x + 1 < d->largura)
+        {
+            d->seguro[pos.y][pos.x + 1] = 1;
+        }
+    }
     else
-        d->mapa[pos.y][pos.x] = 2;
-
-    if(agua==1)
     {
-        d->TEM_AGUA=1;
-        d->passo=d->i-1;
-    }
-
-    if(d->TEM_AGUA==1)
-    {
-        if(d->passo<0)
-            return 1;
-
-        if(d->path[d->passo]==1)
+        if(pos.y - 1 >= 0)
         {
-            d->passo--;
-            return 2;
+            d->seguro[pos.y - 1][pos.x] = 2;
         }
-
-        if(d->path[d->passo]==2)
+        if(pos.y + 1 < d->altura)
         {
-            d->passo--;
-            return 1;
+            d->seguro[pos.y + 1][pos.x] = 2;
         }
-
-        if(d->path[d->passo]==3)
+        if(pos.x - 1 >= 0)
         {
-            d->passo--;
-            return 4;
+            d->seguro[pos.y][pos.x - 1] = 2;
         }
-
-        if(d->path[d->passo]==4)
+        if(pos.x + 1 < d->largura)
         {
-            d->passo--;
-            return 3;
+            d->seguro[pos.y][pos.x + 1] = 2;
         }
     }
 
-    if(d->reconhecer_spawn==0)
+    if(d->modo_retorno == 1)
     {
-        if(pos.x==0 && pos.y==0)
-            return 4;
-
-        if(pos.x==1 && pos.y==0)
-            return 2;
-
-        if(pos.x==1 && pos.y==1)
-            return 3;
-
-        if(pos.x==0 && pos.y==1)
+        if(d->topo_historico > 0)
         {
-            d->reconhecer_spawn=1;
-            return 1;
+            d->topo_historico--;
+            return direcaoOposta(d->historico[d->topo_historico].x);
+        }
+
+        return DIR_MOVIMENTO_CIMA;
+    }
+
+    {
+        int melhor_direcao = -1;
+        int melhor_peso = 1000000;
+
+        for(i = 0; i < 4; i++)
+        {
+            int ny = pos.y + dy[i];
+            int nx = pos.x + dx[i];
+            int peso = 0;
+            int vizinhos_nao_visitados = 0;
+
+            if(ny < 0 || ny >= d->altura || nx < 0 || nx >= d->largura)
+            {
+                continue;
+            }
+
+            if(d->seguro[ny][nx] != 1 || d->visitado[ny][nx] != 0)
+            {
+                continue;
+            }
+
+            if(ny > 0 && d->visitado[ny - 1][nx] == 0 && d->seguro[ny - 1][nx] == 1)
+            {
+                vizinhos_nao_visitados++;
+            }
+            if(ny + 1 < d->altura && d->visitado[ny + 1][nx] == 0 && d->seguro[ny + 1][nx] == 1)
+            {
+                vizinhos_nao_visitados++;
+            }
+            if(nx > 0 && d->visitado[ny][nx - 1] == 0 && d->seguro[ny][nx - 1] == 1)
+            {
+                vizinhos_nao_visitados++;
+            }
+            if(nx + 1 < d->largura && d->visitado[ny][nx + 1] == 0 && d->seguro[ny][nx + 1] == 1)
+            {
+                vizinhos_nao_visitados++;
+            }
+
+            peso += vizinhos_nao_visitados;
+            if(d->ultima_direcao != 0 && dirs[i] == direcaoOposta(d->ultima_direcao))
+            {
+                peso += 2;
+            }
+
+            if(peso < melhor_peso)
+            {
+                melhor_peso = peso;
+                melhor_direcao = i;
+            }
+        }
+
+        if(melhor_direcao >= 0)
+        {
+            int direcao = dirs[melhor_direcao];
+
+            d->historico[d->topo_historico].x = direcao;
+            d->historico[d->topo_historico].y = 0;
+            d->topo_historico++;
+            d->ultima_direcao = direcao;
+            return direcao;
         }
     }
-        d->random = 1 + (rand()%4);
 
-    return d->random;
+    if(d->topo_historico > 0)
+    {
+        d->topo_historico--;
+        return direcaoOposta(d->historico[d->topo_historico].x);
+    }
+
+    for(i = 0; i < 4; i++)
+    {
+        int ny = pos.y + dy[i];
+        int nx = pos.x + dx[i];
+
+        if(ny >= 0 && ny < d->altura && nx >= 0 && nx < d->largura)
+        {
+            if(d->visitado[ny][nx] == 0)
+            {
+                int direcao = dirs[i];
+
+                d->historico[d->topo_historico].x = direcao;
+                d->historico[d->topo_historico].y = 0;
+                d->topo_historico++;
+                d->ultima_direcao = direcao;
+                return direcao;
+            }
+        }
+    }
+
+    return 1 + (rand() % 4);
 }
-
-/*============================================================================*/
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
