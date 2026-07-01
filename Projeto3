@@ -1,0 +1,131 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_DIM 20
+
+typedef struct {
+    int x;
+    int y;
+} Passo;
+
+typedef struct
+{
+   int altura;
+    int largura;
+    int visitado[MAX_DIM][MAX_DIM];
+    int seguro[MAX_DIM][MAX_DIM]; // 0 = desconhecido/suspeito, 1 = garantido seguro
+    Passo historico[MAX_DIM * MAX_DIM * 4];
+    int topo_historico;
+    int modo_retorno;
+
+} Decisor;
+
+Decisor* criaDecisor (int altura, int largura)
+{
+    Decisor* d = (Decisor*) malloc(sizeof(Decisor));
+    if (!d) return NULL;
+
+    d->altura = altura;
+    d->largura = largura;
+    d->topo_historico = 0;
+    d->modo_retorno = 0;
+
+    memset(d->visitado, 0, sizeof(d->visitado));
+    memset(d->seguro, 0, sizeof(d->seguro));
+
+    // A posição inicial (0,0) é sempre segura
+    d->seguro[0][0] = 1;
+
+    return d;
+}
+
+void destroiDecisor (Decisor* d)
+{
+    free (d);
+
+}
+
+
+ // Função auxiliar para obter a direção oposta (usada no recuo)
+
+
+int direcaoOposta(int dir) {
+    if (dir == DIR_MOVIMENTO_CIMA) return DIR_MOVIMENTO_BAIXO;
+    if (dir == DIR_MOVIMENTO_BAIXO) return DIR_MOVIMENTO_CIMA;
+    if (dir == DIR_MOVIMENTO_ESQUERDA) return DIR_MOVIMENTO_DIREITA;
+    if (dir == DIR_MOVIMENTO_DIREITA) return DIR_MOVIMENTO_ESQUERDA;
+    return 0;
+}
+
+int proximoMovimento (Decisor* d, Coordenada pos, int agua, int n_lava)
+{
+    // 1. Atualiza o estado interno com a posição atual
+    d->visitado[pos.y][pos.x] = 1;
+    d->seguro[pos.y][pos.x] = 1;
+
+    if (agua) {
+        d->modo_retorno = 1;
+    }
+
+    // 2. Se não há calor aqui, todos os vizinhos válidos são 100% seguros
+    if (n_lava == 0) {
+        if (pos.y - 1 >= 0) d->seguro[pos.y - 1][pos.x] = 1;
+        if (pos.y + 1 < d->altura) d->seguro[pos.y + 1][pos.x] = 1;
+        if (pos.x - 1 >= 0) d->seguro[pos.y][pos.x - 1] = 1;
+        if (pos.x + 1 < d->largura) d->seguro[pos.y][pos.x + 1] = 1;
+    }
+
+    // 3. CASO ESTEJA RETORNANDO: Segue estritamente a trilha de migalhas de pão de volta
+    if (d->modo_retorno) {
+        if (d->topo_historico > 0) {
+            d->topo_historico--;
+            int dir_vinda = d->historico[d->topo_historico].x; // Guardamos a direção executada aqui
+            return direcaoOposta(dir_vinda);
+        }
+        return DIR_MOVIMENTO_CIMA; // Fallback de salvaguarda
+    }
+
+    // 4. CASO ESTEJA EXPLORANDO: Tenta ir para um vizinho seguro e não visitado
+    int dirs[4] = {DIR_MOVIMENTO_CIMA, DIR_MOVIMENTO_BAIXO, DIR_MOVIMENTO_ESQUERDA, DIR_MOVIMENTO_DIREITA};
+    int dx[4] = {0, 0, -1, 1};
+    int dy[4] = {-1, 1, 0, 0};
+
+    for (int i = 0; i < 4; i++) {
+        int ny = pos.y + dy[i];
+        int nx = pos.x + dx[i];
+
+        if (ny >= 0 && ny < d->altura && nx >= 0 && nx < d->largura) {
+            if (d->seguro[ny][nx] && !d->visitado[ny][nx]) {
+                // Registra o movimento na pilha para poder voltar depois
+                d->historico[d->topo_historico].x = dirs[i];
+                d->historico[d->topo_historico].y = 0;
+                d->topo_historico++;
+                return dirs[i];
+            }
+        }
+    }
+
+    // 5. BACKTRACKING: Se não há vizinhos seguros não visitados, volta um passo
+    if (d->topo_historico > 0) {
+        d->topo_historico--;
+        int ultima_dir = d->historico[d->topo_historico].x;
+        return direcaoOposta(ultima_dir);
+    }
+
+    // 6. FORÇA BRUTA/CHUTE SEGURO: Se o robô ficar encurralado sem rotas 100% seguras,
+    // ele tenta se mover para qualquer casa adjacente que não tenha sido visitada ainda.
+    for (int i = 0; i < 4; i++) {
+        int ny = pos.y + dy[i];
+        int nx = pos.x + dx[i];
+        if (ny >= 0 && ny < d->altura && nx >= 0 && nx < d->largura && !d->visitado[ny][nx]) {
+            d->historico[d->topo_historico].x = dirs[i];
+            d->topo_historico++;
+            return dirs[i];
+        }
+    }
+
+    // Último caso: move aleatoriamente para desempatar
+    return (1 + (rand() % 4));
+}
+
